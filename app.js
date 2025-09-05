@@ -1,13 +1,12 @@
 // app.js — dinaminis konstruotojas iš /data/content.json
-// Funkcijos: filtravimas pagal category, rūšiavimas pagal date, rodymas status icon prieš pavadinimą
-
 (async function(){
   const container = document.getElementById('links');
-  const tagList = document.getElementById('tagList');
-  const sortBtn = document.getElementById('sortBtn');
+  const sortSelect = document.getElementById('sortSelect');
+  const categorySelect = document.getElementById('categorySelect');
+  const resourceSelect = document.getElementById('resourceSelect');
 
   let data = [];
-  let sortDesc = true; // default: naujausia pirmiau
+  let sortDesc = (sortSelect && sortSelect.value === 'desc');
 
   try {
     const resp = await fetch('data/content.json', {cache: "no-store"});
@@ -17,71 +16,100 @@
     console.warn('Klaida kraunant content.json — naudojami pavyzdiniai įrašai.', e);
     data = [
       {
-        "id":"1",
+        "id":"0",
         "date":"2025-09-01",
         "title":"Įvyko klaida",
-        "category":"sistema",
-        "description":"Patikrinti sistemą.",
+        "category":"klaida",
+        "description":"Atsiprašome už nepatogumus.",
         "url":"https://github.com/ale-ignas",
-        "status":"notstarted"
+        "status":"notstarted",
+        "resource":"pranešimas"
       }
     ];
   }
 
-  // padėsim visus įrašus į objektą data; pasiruošim žymas
-  const categories = Array.from(new Set(data.map(d => d.category).filter(Boolean)));
-  categories.forEach(cat => {
-    const b = document.createElement('button');
-    b.className = 'tag';
-    b.dataset.filter = cat;
-    b.textContent = cat;
-    b.addEventListener('click', onFilter);
-    tagList.appendChild(b);
-  });
+  // safety: ensure controls exist (in case index.html slightly different)
+  const ensureSelect = (id, defaultVal) => {
+    const el = document.getElementById(id);
+    if(!el){
+      const s = document.createElement('select');
+      s.id = id;
+      s.innerHTML = `<option value="${defaultVal}">visi</option>`;
+      return s;
+    }
+    return el;
+  };
 
-  // event: sort toggle
-  sortBtn.addEventListener('click', () => {
-    sortDesc = !sortDesc;
-    sortBtn.textContent = sortDesc ? 'Rūšiuoti: Naujiausia ▾' : 'Rūšiuoti: Seniausia ▴';
+  const sortEl = ensureSelect('sortSelect','desc');
+  const catEl = ensureSelect('categorySelect','all');
+  const resEl = ensureSelect('resourceSelect','all');
+
+  // populate filters
+  function populateFilters(dataset){
+    const cats = Array.from(new Set(dataset.map(d => d.category).filter(Boolean))).sort();
+    const ress = Array.from(new Set(dataset.map(d => d.resource).filter(Boolean))).sort();
+
+    // categories
+    if(catEl){
+      catEl.innerHTML = '<option value="all">Visos</option>';
+      cats.forEach(c => {
+        const opt = document.createElement('option'); opt.value = c; opt.textContent = c; catEl.appendChild(opt);
+      });
+    }
+
+    // resources
+    if(resEl){
+      resEl.innerHTML = '<option value="all">Visi</option>';
+      ress.forEach(r => {
+        const opt = document.createElement('option'); opt.value = r; opt.textContent = r; resEl.appendChild(opt);
+      });
+    }
+  }
+
+  populateFilters(data);
+
+  // listeners
+  if(sortEl) sortEl.addEventListener('change', () => {
+    sortDesc = (sortEl.value === 'desc');
     renderCurrent();
   });
+  if(catEl) catEl.addEventListener('change', renderCurrent);
+  if(resEl) resEl.addEventListener('change', renderCurrent);
 
-  // pagrindinis render
   function render(list){
     container.innerHTML = '';
     if(list.length === 0){
-      container.innerHTML = '<p>Nėra įrašų.</p>';
+      container.innerHTML = '<p>Nerasta įrašų pagal pasirinktus filtrus.</p>';
       return;
     }
+
     for(const item of list){
       const article = document.createElement('article');
       article.className = 'card';
-      if(!item.title) article.classList.add('empty');
 
-      // header line: title (left) / date (right)
-      const headerLine = document.createElement('div');
-      headerLine.className = 'header-line';
+      const row = document.createElement('div');
+      row.className = 'card-row';
 
-      const titleWrap = document.createElement('div');
-      titleWrap.className = 'title-wrap';
+      // LEFT: main content (title + desc)
+      const contentCol = document.createElement('div');
+      contentCol.className = 'content-col';
 
-      // status icon element
+      const titleRow = document.createElement('div');
+      titleRow.className = 'title-row';
+
+      // status icon
       const statusIcon = document.createElement('i');
-      statusIcon.classList.add('status'); // common class
-      // map status to FontAwesome class + status class
+      statusIcon.classList.add('status');
       const st = (item.status||'notstarted').toString().toLowerCase();
       if(st === 'done' || st === 'ready' || st === 'paruosta'){
         statusIcon.classList.add('fa-solid','fa-circle-check','done');
-        statusIcon.classList.add('done');
       } else if(st === 'inprogress' || st === 'started' || st === 'pradeta'){
         statusIcon.classList.add('fa-solid','fa-circle-exclamation','inprogress');
       } else {
-        // default not started
         statusIcon.classList.add('fa-solid','fa-circle-xmark','notstarted');
       }
       statusIcon.setAttribute('aria-hidden','true');
 
-      // title link (clickable) with arrow icon
       const a = document.createElement('a');
       a.className = 'title-link';
       a.href = item.url || '#';
@@ -89,62 +117,63 @@
       a.rel = 'noopener noreferrer';
       a.innerHTML = escapeHtml(item.title || '—') + ' <i class="fa-solid fa-arrow-up-right-from-square arrow" aria-hidden="true"></i>';
 
-      titleWrap.appendChild(statusIcon);
-      titleWrap.appendChild(a);
+      titleRow.appendChild(statusIcon);
+      titleRow.appendChild(a);
+      contentCol.appendChild(titleRow);
 
-      const meta = document.createElement('div');
-      meta.className = 'meta';
-      meta.textContent = item.date || '';
-
-      headerLine.appendChild(titleWrap);
-      headerLine.appendChild(meta);
-
-      article.appendChild(headerLine);
-
-      // description
       if(item.description){
         const p = document.createElement('p');
         p.className = 'desc';
         p.textContent = item.description;
-        article.appendChild(p);
+        contentCol.appendChild(p);
       }
 
+      // RIGHT: meta (resource pill + date), aligned right via CSS
+      const metaCol = document.createElement('div');
+      metaCol.className = 'meta-col';
+
+      if(item.resource){
+        const pill = document.createElement('div');
+        pill.className = 'resource-pill';
+        pill.textContent = item.resource;
+        metaCol.appendChild(pill);
+      }
+
+      const dateDiv = document.createElement('div');
+      dateDiv.className = 'date-small';
+      dateDiv.textContent = item.date || '';
+      metaCol.appendChild(dateDiv);
+
+      // append in correct order: left content first, then right meta
+      row.appendChild(contentCol);
+      row.appendChild(metaCol);
+
+      article.appendChild(row);
       container.appendChild(article);
     }
   }
 
-  // filter handler
-  function onFilter(e){
-    const f = e.currentTarget ? e.currentTarget.dataset.filter : e.target.dataset.filter;
-    tagList.querySelectorAll('.tag').forEach(t=>t.classList.remove('active'));
-    e.currentTarget.classList.add('active');
-    renderCurrent();
-  }
-
   function renderCurrent(){
-    // current active tag
-    const active = tagList.querySelector('.tag.active');
-    const filter = active ? active.dataset.filter : 'all';
+    const cat = (catEl && catEl.value) ? catEl.value : 'all';
+    const res = (resEl && resEl.value) ? resEl.value : 'all';
     let list = data.slice();
 
-    // sort by date
+    // filter
+    if(cat && cat !== 'all') list = list.filter(d => d.category === cat);
+    if(res && res !== 'all') list = list.filter(d => d.resource === res);
+
+    // sort
     list.sort((a,b) => {
       const da = a.date ? new Date(a.date).getTime() : 0;
       const db = b.date ? new Date(b.date).getTime() : 0;
       return sortDesc ? db - da : da - db;
     });
 
-    if(filter && filter !== 'all') list = list.filter(d => d.category === filter);
     render(list);
   }
 
-  // attach click for statically added 'visi' button
-  tagList.querySelectorAll('.tag').forEach(b => b.addEventListener('click', onFilter));
-
-  // initial render
   renderCurrent();
 
-  // util: saugus HTML escaping
   function escapeHtml(str){
     if(!str) return '';
     return String(str)
@@ -154,4 +183,5 @@
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;');
   }
+
 })();

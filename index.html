@@ -1,15 +1,19 @@
 <!doctype html>
 <html lang="lt">
+
 <head>
+
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Nuorodų centras — Nuorodos</title>
 
-  <!-- Font Awesome CDN (naudojame v6+ klasėms fa-solid) -->
-   <script src="https://kit.fontawesome.com/b20638a482.js" crossorigin="anonymous"></script>
+  <title>Nuorodų centras - JP2</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous"/>
 
   <link rel="stylesheet" href="styles.css" />
+
 </head>
+
 <body>
   <main class="wrap">
     <header class="header">
@@ -17,13 +21,23 @@
         <h1 class="site-title">Nuorodų centras</h1>
 
         <div class="controls">
-          <div id="sortWrap">
-            <button id="sortBtn" class="sort-btn" aria-pressed="false">Rūšiuoti: Naujiausia ▾</button>
+          <div class="control-row">
+            <label for="sortSelect">Rūšiuoti pagal:</label>
+            <select id="sortSelect" aria-label="Rūšiuoti pagal datą">
+              <option value="desc">Naujausius</option>
+              <option value="asc">Seniausius</option>
+            </select>
+
+            <label for="categorySelect">Pamoka:</label>
+            <select id="categorySelect" aria-label="Filtruoti pagal pamoką">
+              <option value="all">Visos</option>
+            </select>
+
+            <label for="resourceSelect">Tipas:</label>
+            <select id="resourceSelect" aria-label="Filtruoti pagal tipą">
+              <option value="all">Visi</option>
+            </select>
           </div>
-          <nav class="tags" aria-label="Kategorijos" id="tagList">
-            <button class="tag active" data-filter="all">Visi</button>
-            <!-- kitos žymos užkraunamos iš data/content.json -->
-          </nav>
         </div>
       </div>
     </header>
@@ -34,12 +48,7 @@
       </noscript>
     </section>
 
-    <footer class="footer">
-      <p>Data &nbsp;&middot;&nbsp; Tema &nbsp;&middot;&nbsp; Nuoroda</p>
-      <p class="credits">© Nuorodų centras</p>
-    </footer>
   </main>
-
   <script src="app.js"></script>
 </body>
 </html>
