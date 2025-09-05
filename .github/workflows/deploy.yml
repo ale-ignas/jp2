@@ -1,0 +1,48 @@
+name: Deploy static site to public repo
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # --- optional: build step (uncomment if you need)
+      # - name: Install / Build
+      #   run: |
+      #     npm ci
+      #     npm run build
+      # if you have a build output, copy that folder instead of root.
+
+      - name: Prepare files for deploy
+        run: |
+          mkdir deploy
+          # copy only what you want to publish:
+          # cp -r public/* deploy/    # if you have a build output in public/
+          cp -r ./* deploy/
+          # remove the .git folder if present
+          rm -rf deploy/.git || true
+          ls -la deploy
+
+      - name: Deploy to publish repo
+        env:
+          TARGET_REPO: ale-ignas/jp2.github.io   # <-- PAKEISK į tavo viešą repo "owner/repo"
+          DEPLOY_BRANCH: main                        # <-- branch to push to in publish repo
+          TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        run: |
+          cd deploy
+          git init
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Deploy from source repo: $GITHUB_SHA"
+          # push to the target repo using PAT in HTTPS URL (force update)
+          git push --force "https://${TOKEN}@github.com/${TARGET_REPO}.git" HEAD:${DEPLOY_BRANCH}
+          
