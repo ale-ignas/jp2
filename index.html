@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="lt">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Nuorodų centras — Nuorodos</title>
+
+  <!-- Font Awesome CDN (naudojame v6+ klasėms fa-solid) -->
+   <script src="https://kit.fontawesome.com/b20638a482.js" crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="wrap">
+    <header class="header">
+      <div class="top-row">
+        <h1 class="site-title">Nuorodų centras</h1>
+
+        <div class="controls">
+          <div id="sortWrap">
+            <button id="sortBtn" class="sort-btn" aria-pressed="false">Rūšiuoti: Naujiausia ▾</button>
+          </div>
+          <nav class="tags" aria-label="Kategorijos" id="tagList">
+            <button class="tag active" data-filter="all">Visi</button>
+            <!-- kitos žymos užkraunamos iš data/content.json -->
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <section id="links" class="links" aria-live="polite">
+      <noscript>
+        <p>JavaScript išjungtas — redaguok <code>/data/content.json</code>, kad pridėtum įrašus.</p>
+      </noscript>
+    </section>
+
+    <footer class="footer">
+      <p>Data &nbsp;&middot;&nbsp; Tema &nbsp;&middot;&nbsp; Nuoroda</p>
+      <p class="credits">© Nuorodų centras</p>
+    </footer>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

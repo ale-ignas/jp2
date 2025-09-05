@@ -1,0 +1,29 @@
+[
+  {
+    "id": "1",
+    "date": "2025-09-01",
+    "title": "Klasės literatūros sąrašas",
+    "category": "Literatūra",
+    "description": "Trumpas aprašymas apie ką yra šis sąrašas.",
+    "url": "https://example.com/literatura",
+    "status": "done"
+  },
+  {
+    "id": "2",
+    "date": "2025-08-28",
+    "title": "Matematikos užduočių rinkinys",
+    "category": "Matematika",
+    "description": "Užduotys pasiruošimui kontroliniui.",
+    "url": "https://example.com/matematika",
+    "status": "inprogress"
+  },
+  {
+    "id": "3",
+    "date": "2025-07-01",
+    "title": "",
+    "category": "informatika",
+    "description": "",
+    "url": "",
+    "status": "notstarted"
+  }
+]
