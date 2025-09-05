@@ -31,7 +31,7 @@ jobs:
 
       - name: Deploy to publish repo
         env:
-          TARGET_REPO: ale-ignas/jp2.github.io   # <-- PAKEISK į tavo viešą repo "owner/repo"
+          TARGET_REPO: ale-ignas/jp2   # <-- PAKEISK į tavo viešą repo "owner/repo"
           DEPLOY_BRANCH: main                        # <-- branch to push to in publish repo
           TOKEN: ${{ secrets.DEPLOY_TOKEN }}
         run: |
