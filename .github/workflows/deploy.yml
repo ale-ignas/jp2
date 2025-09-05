@@ -14,12 +14,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      # --- optional: build step (uncomment if you need)
-      # - name: Install / Build
-      #   run: |
-      #     npm ci
-      #     npm run build
-      # if you have a build output, copy that folder instead of root.
+       - name: Install / Build
+         run: |
+           npm ci
+           npm run build
 
       - name: Prepare files for deploy
         run: |
