@@ -48,5 +48,14 @@
     "url": "https://drive.google.com/file/d/1IEWXGHjhOEuKYu8t3eKxojBoaiHE95Lt/view?usp=sharing",
     "status": "done",
     "resource": "Vadovėlis"
+  },
+  {
+    "id": "6",
+    "date": "2025/09/05",
+    "title": "Epochos: ankstesnių klasių kurso kartojimas",
+    "category": "Literatūta",
+    "description": "Greitas prisiminimas apie išeitas epochas (Antika, Viduramžiai, Renesansas, Barokas, Klasicizmas)", "url":"https://docs.google.com/document/d/1XQmnu_pkAXALBTMpW8RgtiHnoS7rQ_gC_NnO0G65cbo/edit?usp=drivesdk",
+    "status": "inprogress",
+    "resource": "Konspektas"
   }
 ]
